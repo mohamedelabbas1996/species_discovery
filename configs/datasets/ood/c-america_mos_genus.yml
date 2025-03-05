@@ -1,0 +1,32 @@
+dataset:
+  name: ami_c-america_mos_genus
+  interpolation: bilinear
+  normalization_type: imagenet
+  split_names: [train, val, test]
+  num_classes: 1021 # 636 species and 385 genera
+  image_size: 126
+  pre_size: 128
+  num_workers: '@{num_workers}'
+  num_gpus: '@{num_gpus}'
+  num_machines: '@{num_machines}'
+  train:
+    dataset_class: ImglistDataset
+    data_dir: /network/scratch/y/yuyan.chen/ami_gbif_train_resized/
+    imglist_pth: /network/scratch/y/yuyan.chen/ood_benchmark/ami/metadata/txt/03_c-america_train_id_mos_genus.txt
+    batch_size: 128
+    shuffle: True
+    interpolation: bilinear
+  val:
+    dataset_class: ImglistDataset
+    data_dir: /network/scratch/y/yuyan.chen/ami_gbif_train_resized/
+    imglist_pth: /network/scratch/y/yuyan.chen/ood_benchmark/ami/metadata/txt/03_c-america_val_id_mos_genus.txt
+    batch_size: 128
+    shuffle: False
+    interpolation: bilinear
+  test:
+    dataset_class: ImglistDataset
+    data_dir: /network/scratch/y/yuyan.chen/ami_gbif_train_resized/
+    imglist_pth: /network/scratch/y/yuyan.chen/ood_benchmark/ami/metadata/txt/03_c-america_test_id_mos_genus.txt
+    batch_size: 128
+    shuffle: False
+    interpolation: bilinear

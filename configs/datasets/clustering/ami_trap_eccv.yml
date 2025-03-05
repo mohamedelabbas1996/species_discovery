@@ -1,0 +1,32 @@
+dataset:
+  name: ami_c-america
+  num_classes: 636
+  max_classes: 2500
+  pre_size: 128
+  image_size: 126
+
+  interpolation: bilinear
+  normalization_type: imagenet
+
+  num_workers: '@{num_workers}'
+  num_gpus: '@{num_gpus}'
+  num_machines: '@{num_machines}'
+
+  split_names: [val, test]
+
+  val:
+    dataset_class: ImglistDataset
+    data_dir: /network/scratch/y/yuyan.chen/species_discovery/images/
+    imglist_pth:  /network/scratch/y/yuyan.chen/species_discovery/metadata/clustering_val.txt
+    batch_size: 128
+    shuffle: False
+
+  test:
+    dataset_class: ImglistDataset
+    data_dir: /network/scratch/y/yuyan.chen/species_discovery/images/
+    imglist_pth: /network/scratch/y/yuyan.chen/species_discovery/metadata/clustering_test.txt
+    batch_size: 128
+    shuffle: False
+
+
+  

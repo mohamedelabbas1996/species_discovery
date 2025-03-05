@@ -1,0 +1,12 @@
+name: ami_c-america_oe
+
+dataset:
+  name: ami_c-america_oe
+  split_names: [train, oe, val, test]
+  oe:
+    dataset_class: ImglistDataset
+    data_dir: /network/scratch/y/yuyan.chen/ami_gbif_train_resized/
+    imglist_pth: ./data/03_c-america_train_aux.txt
+    batch_size: 128
+    shuffle: True
+    interpolation: bilinear
