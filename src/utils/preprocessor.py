@@ -5,6 +5,8 @@ from torchvision import transforms
 import torchvision.transforms.functional as F
 from functools import partial
 
+import open_clip
+
 
 class SquarePad:
     def __call__(self, image):
@@ -28,7 +30,7 @@ def random_resize(image, full_size=300):
     return image
 
 
-def get_preprocessor(dataset_config, split):
+def base_preprocessor(dataset_config, split):
     mean, std = [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
 
     input_size = dataset_config.image_size
@@ -60,3 +62,18 @@ def get_preprocessor(dataset_config, split):
 
     ops += [transforms.ToTensor(), transforms.Normalize(mean, std)]
     return transforms.Compose(ops)
+
+
+def bioclip_preprocessor(dataset_config, split):
+    _, preprocess_train, preprocess_val = open_clip.create_model_and_transforms("hf-hub:imageomics/bioclip")
+
+    if split == "train":
+        return preprocess_train
+    else:
+        return preprocess_val
+
+
+def get_preprocessor(config, split):
+    dataset_config = config.dataset
+    preprocessor_dict = {"base": base_preprocessor, "bioclip": bioclip_preprocessor}
+    return preprocessor_dict[config.preprocessor.name](dataset_config, split)

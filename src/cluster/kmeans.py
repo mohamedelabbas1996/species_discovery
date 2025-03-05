@@ -33,7 +33,7 @@ class KMeansClusterer(BaseClusterer):
         features = data_dict["test"]["feat_list"]
         labels = data_dict["test"]["label_list"].astype(int)
 
-        old_mask = labels >= self.config.dataset.num_classes
+        old_mask = labels < self.config.dataset.num_classes
 
         kmeans = MiniBatchKMeans(n_clusters=self.k, batch_size=1024, random_state=42).fit(features)
         preds = kmeans.labels_
@@ -63,6 +63,7 @@ class KMeansClusterer(BaseClusterer):
         )
 
         metrics = {
+            "K": self.k,
             "ACC_all": all_acc,
             "NMI_all": all_nmi,
             "ARI_all": all_ari,
