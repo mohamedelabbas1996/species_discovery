@@ -17,12 +17,23 @@ PYTHONPATH=$CURDIR/src:$PYTHONPATH
 
 export PYTHONPATH
 
-# python scripts/copy_images.py 
+# python scripts/zero_shot_clustering.py \
+#  --config configs/datasets/clustering/test.yml \
+#       configs/networks/dinov2.yml \
+#       configs/pipelines/test/test_clustering.yml \
+#       configs/preprocessors/base_preprocessor.yml \
+#     --dataset.max_classes 638 \
+#     --search_mode.name binary \
+#     --num_gpus 1 --num_workers 1 \
+#     --wandb.project zero_shot_clustering \
+#     --wandb.entity moth-ai \
+#     --merge_option merge \
 
 python scripts/zero_shot_clustering.py \
  --config configs/datasets/clustering/test.yml \
-      configs/networks/dinov2.yml \
+      configs/networks/resnet50.yml \
       configs/pipelines/test/test_clustering.yml \
+      configs/preprocessors/bioclip_preprocessor.yml \
     --dataset.max_classes 638 \
     --search_mode.name binary \
     --num_gpus 1 --num_workers 1 \

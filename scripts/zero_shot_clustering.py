@@ -22,10 +22,12 @@ dataset_name = config.dataset.name
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+
+network_name = config.network.name if config.network.name != "dinov2" else config.network.vit_name
 wandb.init(
     project=config.wandb.project,
     entity=config.wandb.entity,
-    name=f"{config.dataset.name}_{config.network.name}",
+    name=f"{config.dataset.name}_{network_name}",
     resume="allow",
     config=config,
 )
@@ -33,17 +35,6 @@ wandb.init(
 
 dataloader_dict = get_dataloader(config)
 net = get_network(config.network)
-
-if config.network.pretrained:
-    checkpoint = torch.load(
-        config.network.checkpoint,
-        weights_only=False,
-    )
-    weights = checkpoint["model_state"]
-
-    net.load_state_dict(weights)
-net.eval()
-net.to(device)
 
 evaluator = get_evaluator(config)
 
