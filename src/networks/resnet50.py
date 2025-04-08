@@ -1,17 +1,17 @@
 from torchvision.models.resnet import Bottleneck, ResNet
+import timm
 
 
 class ResNet50(ResNet):
-    def __init__(self,
-                 block=Bottleneck,
-                 layers=[3, 4, 6, 3],
-                 num_classes=1000):
-        super(ResNet50, self).__init__(block=block,
-                                       layers=layers,
-                                       num_classes=num_classes)
+    def __init__(self, block=Bottleneck, layers=[3, 4, 6, 3], num_classes=1000):
+        super(ResNet50, self).__init__(
+            block=block, layers=layers, num_classes=num_classes
+        )
         self.feature_size = 2048
 
-    def forward(self, x, return_feature=False, return_feature_list=False):
+    def forward(
+        self, x, return_feature=False, return_feature_list=False, return_both=False
+    ):
         feature1 = self.relu(self.bn1(self.conv1(x)))
         feature1 = self.maxpool(feature1)
         feature2 = self.layer1(feature1)
@@ -20,10 +20,12 @@ class ResNet50(ResNet):
         feature5 = self.layer4(feature4)
         feature5 = self.avgpool(feature5)
         feature = feature5.view(feature5.size(0), -1)
+        if return_feature:
+            return feature
         logits_cls = self.fc(feature)
 
         feature_list = [feature1, feature2, feature3, feature4, feature5]
-        if return_feature:
+        if return_both:
             return logits_cls, feature
         elif return_feature_list:
             return logits_cls, feature_list
@@ -72,3 +74,15 @@ class ResNet50(ResNet):
 
     def get_fc_layer(self):
         return self.fc
+
+
+# class Resnet50TimmClassifier:
+#     def __init__(self, num_classes):
+#         super().__init__()
+
+#         self.model = timm.create_model(
+#             "resnet50", pretrained=True, num_classes=num_classes
+#         )
+
+#     def get_features():
+#         pass

@@ -53,7 +53,10 @@ def get_dataloader(config):
         preprocessor = get_preprocessor(config, split)
         dataset = BaseDataset(split_config, preprocessor)
         dataloader = DataLoader(
-            dataset, shuffle=split == "train", num_workers=get_num_workers(), batch_size=split_config.batch_size
+            dataset,
+            shuffle=split == "train",
+            num_workers=get_num_workers(),
+            batch_size=split_config.batch_size,
         )
         dataloader_dict[split] = dataloader
 

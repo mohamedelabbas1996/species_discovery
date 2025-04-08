@@ -12,10 +12,12 @@ class BioCLIPWrapper(nn.Module):
         feature_size = self.backbone.visual.output_dim
         self.fc = nn.Linear(feature_size, num_classes)
 
-    def forward(self, x, return_feature=False):
+    def forward(self, x, return_feature=False, return_both=False):
         feature = self.backbone.encode_image(x)
-        pred = self.fc(feature)
         if return_feature:
+            return feature
+        pred = self.fc(feature)
+        if return_both:
             return pred, feature
         else:
             return pred

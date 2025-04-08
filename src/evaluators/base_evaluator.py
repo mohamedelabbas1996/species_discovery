@@ -20,7 +20,13 @@ class BaseEvaluator:
     def __init__(self, config: Config):
         self.config = config
 
-    def eval_acc(self, net: nn.Module, data_loader: DataLoader, postprocessor=None, epoch_idx: int = -1):
+    def eval_acc(
+        self,
+        net: nn.Module,
+        data_loader: DataLoader,
+        postprocessor=None,
+        epoch_idx: int = -1,
+    ):
         net.eval()
 
         loss_avg = 0.0
@@ -48,11 +54,17 @@ class BaseEvaluator:
 
         metrics = {}
         metrics["epoch_idx"] = epoch_idx
-        metrics["loss"] = self.save_metrics(loss)
-        metrics["acc"] = self.save_metrics(acc)
+        metrics["loss"] = loss
+        metrics["acc"] = acc
+        # metrics["loss"] = self.save_metrics(loss)
+        # metrics["acc"] = self.save_metrics(acc)
         return metrics
 
-    def extract(self, net: nn.Module, data_loader: DataLoader, filename: str = "feature"):
+    def extract(
+        self, net: nn.Module, data_loader: DataLoader, filename: str = "feature"
+    ):
+        save_dir = self.config.output_dir
+        # if not os.path.isfile(os.path.join(save_dir, filename)):
         net.eval()
         feat_list, label_list = [], []
 
@@ -66,22 +78,16 @@ class BaseEvaluator:
                 data = batch["data"].cuda()
                 label = batch["label"]
 
-                _, feat = net(data, return_feature=True)
+                feat = net(data, return_feature=True)
                 feat_list.extend(to_np(feat))
                 label_list.extend(to_np(label))
 
         feat_list = np.array(feat_list)
         label_list = np.array(label_list)
 
-        save_dir = self.config.output_dir
         os.makedirs(save_dir, exist_ok=True)
-        np.savez(os.path.join(save_dir, filename), feat_list=feat_list, label_list=label_list)
-
-    # def save_metrics(self, value):
-    #     # all_values = comm.gather(value)
-    #     temp = 0
-    #     for i in all_values:
-    #         temp = temp + i
-    #     # total_value = np.add([x for x in all_values])s
-
-    #     return temp
+        np.savez(
+            os.path.join(save_dir, filename),
+            feat_list=feat_list,
+            label_list=label_list,
+        )

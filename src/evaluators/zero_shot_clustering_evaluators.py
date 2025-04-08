@@ -17,7 +17,10 @@ class ZeroShotClusteringEvaluator(BaseEvaluator):
 
     def eval_clustering(self, net, dataloader_dict):
         net.eval()
-        val_dataloader, test_dataloader = dataloader_dict["val"], dataloader_dict["test"]
+        val_dataloader, test_dataloader = (
+            dataloader_dict["val"],
+            dataloader_dict["test"],
+        )
         self.extract(net, val_dataloader, filename="val")
         self.extract(net, test_dataloader, filename="test")
 

@@ -24,10 +24,11 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 network_name = config.network.name if config.network.name != "dinov2" else config.network.vit_name
+wandb_name = config.wandb.name if config.wandb.name else f"{config.dataset.name}_{network_name}"
 wandb.init(
     project=config.wandb.project,
     entity=config.wandb.entity,
-    name=f"{config.dataset.name}_{network_name}",
+    name=wandb_name,
     resume="allow",
     config=config,
 )

@@ -2,7 +2,7 @@ import torch.nn as nn
 
 
 class ExtendedNet(nn.Module):
-    def __init__(self, backbone, num_closed_set, num_classes):
+    def __init__(self, backbone, num_classes, num_all_classes):
         super(ExtendedNet, self).__init__()
 
         self.backbone = backbone
@@ -14,16 +14,20 @@ class ExtendedNet(nn.Module):
         except AttributeError:
             feature_size = backbone.module.feature_size
 
-        self.fc = nn.Linear(feature_size, num_closed_set)
-        self.fc_extended = nn.Linear(feature_size, num_classes)
+        self.fc = nn.Linear(feature_size, num_classes)
+        self.fc_extended = nn.Linear(feature_size, num_all_classes)
 
-    def forward(self, x, return_pred_extended=False, return_feature=False):
-        _, feature = self.backbone(x, return_feature=True)
+    def forward(
+        self, x, return_pred_extended=False, return_feature=False, return_both=False
+    ):
+        feature = self.backbone(x, return_feature=True)
+        if return_feature:
+            return feature
         pred = self.fc(feature)
         if return_pred_extended:
             pred_extended = self.fc_extended(feature)
             return pred, pred_extended
-        if return_feature:
+        if return_both:
             return pred, feature
         else:
             return pred

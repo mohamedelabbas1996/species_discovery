@@ -60,8 +60,8 @@ def setup_config(config_process_order=("merge", "parse_args", "parse_refs")):
         else:
             raise ValueError("unknown config process name: {}".format(process))
 
-    # manually modify 'output_dir'
-    config.output_dir = os.path.join(config.output_dir, config.exp_name)
+    # # manually modify 'output_dir'
+    # config.output_dir = os.path.join(config.output_dir, config.exp_name)
 
     return config
 

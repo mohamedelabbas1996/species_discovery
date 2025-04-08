@@ -2,20 +2,16 @@ import torch
 import wandb
 import os
 from pathlib import Path
-
-import pathlib
-import numpy as np
-import pandas as pd
 import signal
+from types import FrameType
 
+from src.utils.dataset import get_dataloader
+from src.utils.config import setup_config
 from src.networks import get_network
 from src.trainers import get_trainer
-from src.utils.checkpoint import RunState, load_checkpoint, save_checkpoint
-from src.utils.config import setup_config
-from src.utils.pipeline_init import signal_handler, print_metrics
-from src.utils.dataset import get_dataloader
 from src.evaluators import get_evaluator
-
+from src.utils.checkpoint import RunState, load_checkpoint, save_checkpoint
+from src.utils.pipeline_init import signal_handler, print_metrics
 
 # init
 config = setup_config()
@@ -28,12 +24,11 @@ try:
 except:
     SLURM_TMPDIR = None
 SLURM_JOBID = os.environ["SLURM_JOB_ID"]
+# load weights from checkpoint
+# get dataloaders
 loader_dict = get_dataloader(config)
 
-if "oe" in loader_dict:
-    train_loader = [loader_dict["train"], loader_dict["oe"]]
-else:
-    train_loader = loader_dict["train"]
+train_loader = loader_dict["train"]
 val_loader = loader_dict["val"]
 
 # initialize
@@ -96,23 +91,20 @@ for epoch_idx in range(start_epoch, config.optimizer.num_epochs + 1):
     epoch_metrics, epoch_metrics_formated = {}, {}
     net, train_metrics = trainer.train_epoch(epoch_idx)[:2]
     epoch_metrics["train/loss"] = train_metrics["loss"]
-    epoch_metrics_formated["train_loss"] = f"{train_metrics['loss']:.4f}"
-    test_metrics = evaluator.eval_acc(net, val_loader, epoch_idx=epoch_idx)
-    epoch_metrics["val/loss"] = test_metrics["loss"]
-    epoch_metrics["val/acc"] = test_metrics["acc"]
-    epoch_metrics_formated["val_loss"] = f"{ test_metrics['loss']:.4f}"
-    epoch_metrics_formated["val_acc"] = f"{ test_metrics['acc']:.4f}"
-    val_accuracy = test_metrics["acc"]
+
+    test_metrics = evaluator.eval_clustering(net, loader_dict)
+
+    for key in test_metrics.keys():
+        epoch_metrics[f"val/{key}"] = test_metrics[key]
+    val_accuracy = test_metrics["ACC_new"]
     is_best = val_accuracy > best_acc
     best_acc = max(val_accuracy, best_acc)
 
-    if config.network.name == "arpl_net":
-        model_state_dict = net["netF"].state_dict()
-    else:
-        model_state_dict = net.state_dict()
+    model_state_dict = net.state_dict()
 
     optimizer_state = trainer.optimizer.state_dict()
     scheduler_state = trainer.scheduler.state_dict()
+
     save_checkpoint(
         checkpoint_dir,
         is_best,
@@ -126,7 +118,6 @@ for epoch_idx in range(start_epoch, config.optimizer.num_epochs + 1):
         ),
     )
 
-    print(f" {print_metrics(epoch_metrics_formated)}", flush=True)
     wandb.log({**epoch_metrics})
 
 
