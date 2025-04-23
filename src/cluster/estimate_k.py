@@ -72,19 +72,25 @@ def test_kmeans(k, data_dict, config, metric):
     kmeans = KMeans(n_clusters=k, random_state=0).fit(all_feats)
     preds = kmeans.labels_[labeled_mask]
 
+    split_cost, merge_cost = config.split_cost, config.merge_cost
+
     if metric == "acc":
         cost = cluster_acc(
-            data_dict["val"]["label_list"].astype(int), preds.astype(int)
+            data_dict["val"]["label_list"].astype(int),
+            preds.astype(int),
         )
     if metric == "pairwise":
         cost = -pairwise_cost(
-            data_dict["val"]["label_list"].astype(int), preds.astype(int)
+            data_dict["val"]["label_list"].astype(int),
+            preds.astype(int),
+            split_cost,
+            merge_cost,
         )
 
     return cost
 
 
-def test_kmeans_for_scipy(k, data_dict, metric):
+def test_kmeans_for_scipy(k, data_dict, config, metric):
     """
     In this case, the test loader needs to have the labelled and unlabelled subsets of the training data
     """
@@ -102,13 +108,18 @@ def test_kmeans_for_scipy(k, data_dict, metric):
     kmeans = KMeans(n_clusters=k, random_state=0).fit(all_feats)
     preds = kmeans.labels_[labeled_mask]
 
+    split_cost, merge_cost = config.split_cost, config.merge_cost
+
     if metric == "acc":
         cost = -cluster_acc(
             data_dict["val"]["label_list"].astype(int), preds.astype(int)
         )
     if metric == "pairwise":
         cost = pairwise_cost(
-            data_dict["val"]["label_list"].astype(int), preds.astype(int)
+            data_dict["val"]["label_list"].astype(int),
+            preds.astype(int),
+            split_cost,
+            merge_cost,
         )
 
     return cost
@@ -178,7 +189,7 @@ def scipy_optimise(data_dict, config):
     metric = config.metric
 
     test_k_means_partial = partial(
-        test_kmeans_for_scipy, data_dict=data_dict, metric=metric
+        test_kmeans_for_scipy, data_dict=data_dict, config=config, metric=metric
     )
     res = minimize_scalar(
         test_k_means_partial,

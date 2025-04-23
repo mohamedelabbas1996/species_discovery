@@ -16,15 +16,17 @@ class ZeroShotClusteringEvaluator(BaseEvaluator):
         self.config = config
 
     def eval_clustering(self, net, dataloader_dict):
+        save_dir = self.config.output_dir
+
         net.eval()
         val_dataloader, test_dataloader = (
             dataloader_dict["val"],
             dataloader_dict["test"],
         )
-        self.extract(net, val_dataloader, filename="val")
-        self.extract(net, test_dataloader, filename="test")
-
-        save_dir = self.config.output_dir
+        if not os.path.exists(os.path.join(save_dir, f"val.npz")):
+            self.extract(net, val_dataloader, filename="val")
+        if not os.path.exists(os.path.join(save_dir, f"test.npz")):
+            self.extract(net, test_dataloader, filename="test")
 
         data_dict = {}
 

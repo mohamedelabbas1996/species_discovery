@@ -14,7 +14,9 @@ class BaseClusterer:
             for data_type in data_dict:
                 new_data_dict[data_type] = {}
                 features = data_dict[data_type]["feat_list"]
-                features = dimension_reduction(standardize(features))
+                features = dimension_reduction(
+                    standardize(features), self.pca.n_components
+                )
                 new_data_dict[data_type]["feat_list"] = features
                 new_data_dict[data_type]["label_list"] = data_dict[data_type][
                     "label_list"

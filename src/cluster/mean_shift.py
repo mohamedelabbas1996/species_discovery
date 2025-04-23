@@ -1,4 +1,4 @@
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import MeanShift
 from .base_clusterer import BaseClusterer
 from .clustering_metrics import get_clustering_metrics
 from sklearn import preprocessing
@@ -9,33 +9,12 @@ import numpy as np
 import os
 
 
-def get_distance_threshold(features, labels):
-    # Compute pairwise distances
-    distance_matrix = squareform(pdist(features))
-
-    # Compute intra-cluster and inter-cluster distances
-    intra_cluster_distances = []
-    inter_cluster_distances = []
-
-    for i in range(len(features)):
-        for j in range(i + 1, len(features)):
-            if labels[i] == labels[j]:  # Same cluster
-                intra_cluster_distances.append(distance_matrix[i, j])
-            else:  # Different cluster
-                inter_cluster_distances.append(distance_matrix[i, j])
-
-    # Determine a reasonable threshold
-    # A good threshold might be around the 95th percentile of intra-cluster distances
-    threshold = np.percentile(intra_cluster_distances, 95)
-    return threshold
-
-
-class AgglomerativeClusterer(BaseClusterer):
+class MeanShiftClusterer(BaseClusterer):
     def __init__(self, config):
         self.config = config
         self.setup_flag = False
         self.data_dict = None
-        self.distance_threshold = self.config.agglomerative.distance_threshold
+        self.bandwidth = self.config.mean_shift.bandwidth
 
     def setup(self, data_dict):
         # estimate the distance threshold
@@ -60,16 +39,8 @@ class AgglomerativeClusterer(BaseClusterer):
                     feat_list=features,
                     label_list=labels,
                 )
-
             self.data_dict = new_data_dict
-
             self.setup_flag = True
-
-            # doesn't work :/
-            if not self.distance_threshold:
-                self.distance_threshold = get_distance_threshold(
-                    data_dict["val"]["feat_list"], data_dict["val"]["label_list"]
-                )
         else:
             pass
 
@@ -91,17 +62,15 @@ class AgglomerativeClusterer(BaseClusterer):
         features, labels = test_data_dict["feat_list"], test_data_dict["label_list"]
 
         old_mask = labels < self.config.dataset.num_classes
-        print("distance threshold: ", self.distance_threshold)
-        clusterer = AgglomerativeClustering(
-            n_clusters=None, distance_threshold=self.distance_threshold
-        ).fit(features)
+        print("bandwidth: ", self.bandwidth)
+        clusterer = MeanShift(bandwidth=self.bandwidth).fit(features)
 
         preds = clusterer.labels_
 
         metrics = get_clustering_metrics(
             labels, preds, old_mask, self.config.split_cost, self.config.merge_cost
         )
-        metrics["K"] = clusterer.n_clusters_
-        metrics["distance_threshold"] = self.distance_threshold
+        metrics["K"] = preds.max() + 1
+        metrics["bandwidth"] = self.bandwidth
 
         return metrics
