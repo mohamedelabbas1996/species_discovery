@@ -17,7 +17,6 @@ class MeanShiftClusterer(BaseClusterer):
         self.bandwidth = self.config.mean_shift.bandwidth
 
     def setup(self, data_dict):
-        # estimate the distance threshold
         new_data_dict = {}
         save_dir = self.config.output_dir
         if not self.setup_flag:

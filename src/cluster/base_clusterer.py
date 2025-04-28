@@ -1,6 +1,7 @@
 from .preprocessing_features import standardize, dimension_reduction
 from copy import deepcopy
-
+import numpy as np
+import os
 
 class BaseClusterer:
     def __init__(self, config):
@@ -10,18 +11,26 @@ class BaseClusterer:
 
     def setup(self, data_dict):
         new_data_dict = {}
+        save_dir = self.config.output_dir
         if not self.setup_flag:
             for data_type in data_dict:
                 new_data_dict[data_type] = {}
                 features = data_dict[data_type]["feat_list"]
                 features = dimension_reduction(
-                    standardize(features), self.pca.n_components
+                    standardize(features), self.config.pca.n_components
                 )
+                labels = data_dict[data_type]["label_list"]
                 new_data_dict[data_type]["feat_list"] = features
-                new_data_dict[data_type]["label_list"] = data_dict[data_type][
-                    "label_list"
-                ]
+                new_data_dict[data_type]["label_list"] = labels
 
+                np.savez(
+                    os.path.join(
+                        save_dir,
+                        f"{data_type}_processed_pca_{self.config.pca.n_components}",
+                    ),
+                    feat_list=features,
+                    label_list=labels,
+                )
             self.data_dict = new_data_dict
             self.setup_flag = True
         else:

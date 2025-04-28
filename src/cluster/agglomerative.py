@@ -10,22 +10,16 @@ import os
 
 
 def get_distance_threshold(features, labels):
-    # Compute pairwise distances
     distance_matrix = squareform(pdist(features))
-
-    # Compute intra-cluster and inter-cluster distances
     intra_cluster_distances = []
     inter_cluster_distances = []
-
     for i in range(len(features)):
         for j in range(i + 1, len(features)):
-            if labels[i] == labels[j]:  # Same cluster
+            if labels[i] == labels[j]:
                 intra_cluster_distances.append(distance_matrix[i, j])
-            else:  # Different cluster
+            else:
                 inter_cluster_distances.append(distance_matrix[i, j])
-
-    # Determine a reasonable threshold
-    # A good threshold might be around the 95th percentile of intra-cluster distances
+    # choose the 95th percentile of intra-cluster distances
     threshold = np.percentile(intra_cluster_distances, 95)
     return threshold
 
