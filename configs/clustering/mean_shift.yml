@@ -1,0 +1,8 @@
+cluster:
+  name: mean_shift
+
+mean_shift:
+  bandwidth: 1.0
+
+search_mode:
+  name: bandwidth

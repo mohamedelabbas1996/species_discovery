@@ -1,5 +1,5 @@
 dataset:
-  name: ami_c-america
+  name: gbif_day_0
   num_all_classes: 637
   num_classes: 636
   max_classes: 2500
@@ -17,11 +17,11 @@ dataset:
 
   train:
     dataset_class: ImglistDataset
-    data_dir: /network/scratch/y/yuyan.chen/ami_gbif_train_resized_new/ # we copy all unlabeled crops into this directory
-    imglist_pth:  /network/scratch/y/yuyan.chen/species_discovery/metadata/gcd_train.txt
+    data_dir: /network/scratch/y/yuyan.chen/ami_gbif_train_resized_new/
+    imglist_pth:  /network/scratch/y/yuyan.chen/species_discovery/metadata/
     batch_size: 128
     shuffle: True
-    len: 81174
+    len: 
     use_mixres: True
     dataaug: randaug
     rescale_size: None
@@ -29,15 +29,15 @@ dataset:
 
   val:
     dataset_class: ImglistDataset
-    data_dir: /network/scratch/y/yuyan.chen/species_discovery/images/
-    imglist_pth:  /network/scratch/y/yuyan.chen/species_discovery/metadata/gcd_val.txt
+    data_dir: /network/scratch/y/yuyan.chen/ami_gbif_train_resized_new/
+    imglist_pth:  /network/scratch/y/yuyan.chen/species_discovery/metadata/
     batch_size: 128
     shuffle: False
 
   test:
     dataset_class: ImglistDataset
-    data_dir: /network/scratch/y/yuyan.chen/species_discovery/images/
-    imglist_pth: /network/scratch/y/yuyan.chen/species_discovery/metadata/gcd_test.txt
+    data_dir: /network/scratch/y/yuyan.chen/ami_gbif_train_resized_new/
+    imglist_pth: /network/scratch/y/yuyan.chen/species_discovery/metadata/
     batch_size: 128
     shuffle: False
 

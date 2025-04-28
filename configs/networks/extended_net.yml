@@ -1,7 +1,7 @@
 network:
   name: extended_net
   num_classes: '@{dataset.num_classes}'
-  num_closed_set: '@{dataset.num_closed_set}'
+  num_all_classes: '@{dataset.num_all_classes}'
   pretrained: False # In training pipeline:"False"; In testing pipeline:"True"
   num_gpus: '@{num_gpus}'
   checkpoint: none

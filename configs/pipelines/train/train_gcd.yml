@@ -1,0 +1,54 @@
+exp_name: "'@{dataset.name}'_'@{network.name}'_'@{trainer.name}'_e'@{optimizer.num_epochs}'_lr'@{optimizer.lr}'_'@{mark}'/s'@{seed}'"
+output_dir: ./results/
+save_output: True
+merge_option: default
+mark: default
+seed: 0
+
+num_gpus: 1
+num_workers: 8
+num_machines: 1
+machine_rank: 0
+
+preprocessor:
+  name: base
+
+network:
+  pretrained: False
+
+pipeline:
+  name: train
+
+trainer:
+  name: gcd
+
+evaluator:
+  name: zero_shot_clustering
+
+optimizer:
+  name: adamw
+  num_epochs: 30
+  warmup_epochs: 2
+  epochs: 30 # needs updates
+  lr: 0.1 # needs update 
+  momentum: 0.9 # needs update 
+  nesterov: True
+  weight_decay: 0.00001 # needs update 
+
+recorder:
+  name: base
+  save_all_models: False
+
+wandb:
+  project: ood_benchmark_classifier
+  entity: moth-ai
+  name: baseline
+
+run_dir: ood_benchmark/
+
+n_views: 2
+temperature: 1.0 # needs update 
+contrast_unlabel_only: False # needs update 
+sup_con_weight: 0.35 # needs update 
+grad_from_block: 11
+
