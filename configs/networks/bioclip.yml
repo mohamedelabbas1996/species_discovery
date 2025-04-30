@@ -1,6 +1,0 @@
-network:
-  name: bioclip
-  num_classes: '@{dataset.num_classes}'
-  pretrained: False # In training pipeline:"False"; In testing pipeline:"True"
-  num_gpus: '@{num_gpus}'
-  checkpoint: none

@@ -1,9 +1,0 @@
-cluster:
-  name: dbscan
-
-dbscan:
-  eps: 10.0
-  min_samples: 1
-
-search_mode:
-  name: eps

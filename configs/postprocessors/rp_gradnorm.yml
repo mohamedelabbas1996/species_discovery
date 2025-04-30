@@ -1,4 +1,0 @@
-postprocessor:
-  name: rp_gradnorm
-  APS_mode: False
-  postprocessor_args:

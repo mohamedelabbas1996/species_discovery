@@ -1,8 +1,0 @@
-clustering:
-  method: agglomerative
-  
-agglomerative:
-  distance_threshold: 1.0
-
-search_mode:
-  name: distance_threshold
